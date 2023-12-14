@@ -89,7 +89,7 @@ function queryMusicFun() {
     ref="metingDomRef"
     :id="musicIdSearch"
     :server="musicDefaultChoice"
-    type="musicIdSearch"
+    type="search"
     :key="musicKey"
     autoplay="true"
   ></meting-js>
