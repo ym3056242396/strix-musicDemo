@@ -35,23 +35,8 @@ let musicKey = ref(0)
 let musicDefaultChoice = ref('netease')
 
 function queryMusicFun() {
-  let musicDomRef = ref('metingDomRef')
-  console.log(musicDomRef, '>>>>musicDomRef')
   musicKey.value = new Date().getTime()
 }
-// export default musicDemo({
-//   setup() {
-//     const musicDomRef = ref(metingDomRef)
-
-//     const getMusicDomRef = () => {
-//       console.log(musicDomRef.value.value)
-//     }
-//     //一定不要忘记在return中返回给外部
-//     return {
-//       musicDomRef
-//     }
-//   }
-// })
 </script>
 <template>
   <el-form @submit.native.prevent>
@@ -86,7 +71,6 @@ function queryMusicFun() {
 
   <br />
   <meting-js
-    ref="metingDomRef"
     :id="musicIdSearch"
     :server="musicDefaultChoice"
     type="search"
