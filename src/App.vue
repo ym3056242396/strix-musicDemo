@@ -108,7 +108,7 @@ const musicItmeClick = (e) => {
               <el-button :icon="Search" @click="queryMusicFun" />
             </template>
           </el-input>
-          <el-select v-model="musicPlayerType">
+          <!-- <el-select v-model="musicPlayerType">
             <el-option
               :disabled="item.id !== 3"
               v-for="item in playerTypeList"
@@ -116,7 +116,7 @@ const musicItmeClick = (e) => {
               :label="item.typeName"
               :value="item.value"
             />
-          </el-select>
+          </el-select> -->
         </el-form-item>
       </el-form>
       <br />
