@@ -2,108 +2,149 @@
 import { ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 
-// 音乐平台列表
+// 音乐平台列表  目前只有网易可用
 const musicInfoList = [
-  {
-    name: 'tencent',
-    chName: 'QQ音乐',
-    id: '0'
-  },
   {
     name: 'netease',
     chName: '网易云音乐',
-    id: '1'
+    id: 0
+  },
+  {
+    name: 'tencent',
+    chName: 'QQ音乐',
+    id: 1
   },
   {
     name: 'kugou',
     chName: '酷狗音乐',
-    id: '2'
+    id: 2
   },
   {
     name: 'xiami',
     chName: '虾米音乐',
-    id: '3'
+    id: 3
   },
   {
     name: 'baidu',
     chName: '百度音乐',
-    id: '4'
+    id: 4
   }
 ]
-let musicIdSearch = ref('')
+// 查询类型   目前只有3可用
+const playerTypeList = [
+  {
+    value: 'song',
+    typeName: '单曲',
+    id: 0
+  },
+  {
+    value: 'playlist',
+    typeName: '歌单',
+    id: 1
+  },
+  {
+    value: 'album',
+    typeName: '专辑',
+    id: 2
+  },
+  {
+    value: 'search',
+    typeName: '搜索结果',
+    id: 3
+  },
+  {
+    value: 'artist',
+    typeName: '艺术家',
+    id: 4
+  }
+]
+let metingRef = ref()
+let setImgUrl = ref('')
+let musicIdSearch = ref('Sea of Tranquility')
+let musicPlayerColor = ref('#00FFD9')
 let musicKey = ref(0)
 let musicDefaultChoice = ref('netease')
+let musicPlayerType = ref('search')
 
-function queryMusicFun() {
+// 搜索获取歌曲
+const queryMusicFun = () => {
   musicKey.value = new Date().getTime()
+}
+// 单曲点击事件  需要阻止首次进入页面会获取list
+const musicItmeClick = (e) => {
+  if (!e.target.innerText) return
+  // 获取当前点击的id
+  let id = e.target.innerText.replace(/[^0-9]/g, '')
+  const requestMusicList = metingRef.value.aplayer.list.audios ?? []
+  if (!requestMusicList) return
+  setImgUrl.value = requestMusicList[id - 1].pic ?? ''
 }
 </script>
 <template>
-  <el-form @submit.native.prevent>
-    <el-form-item>
-      <el-input
-        clearable
-        v-model="musicIdSearch"
-        placeholder="请输入搜索关键字"
-        style="width: 100%"
-        :prefix-icon="Search"
-        @keyup.enter.native="queryMusicFun"
-      />
-    </el-form-item>
-    <el-form-item label="选择搜索平台：">
-      <el-radio-group v-model="musicDefaultChoice" class="ml-4">
-        <el-radio
-          v-for="item in musicInfoList"
-          :label="item.name"
-          :key="item.id"
-          size="mini"
-          >{{ item.chName }}</el-radio
-        >
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item>
-      <el-button @click="queryMusicFun" type="primary" style="width: 100%"
-        >搜索</el-button
-      >
-    </el-form-item>
-  </el-form>
-  <br />
-
-  <br />
-  <meting-js
-    :id="musicIdSearch"
-    :server="musicDefaultChoice"
-    type="search"
-    :key="musicKey"
-    autoplay="true"
-  ></meting-js>
+  <div class="appFaBody">
+    <!-- <img class="img_bk" :src="setImgUrl" :fit="'fill'" /> -->
+    <!-- <el-color-picker v-model="musicPlayerColor" /> -->
+    <div class="playerBody">
+      <el-form @submit.native.prevent>
+        <el-form-item> </el-form-item>
+        <el-form-item>
+          <el-input
+            v-model="musicIdSearch"
+            placeholder="请输入搜索关键字"
+            class="input-with-select"
+          >
+            <template #prepend>
+              <el-select v-model="musicDefaultChoice">
+                <el-option
+                  :disabled="item.id !== 0"
+                  v-for="item in musicInfoList"
+                  :key="item.id"
+                  :label="item.chName"
+                  :value="item.name"
+                />
+              </el-select>
+            </template>
+            <template #append>
+              <el-button :icon="Search" @click="queryMusicFun" />
+            </template>
+          </el-input>
+          <el-select v-model="musicPlayerType">
+            <el-option
+              :disabled="item.id !== 3"
+              v-for="item in playerTypeList"
+              :key="item.id"
+              :label="item.typeName"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <br />
+      <meting-js
+        style="color: #333"
+        ref="metingRef"
+        @click="musicItmeClick($event)"
+        :id="musicIdSearch"
+        :server="musicDefaultChoice"
+        :theme="musicPlayerColor"
+        :type="musicPlayerType"
+        :key="musicKey"
+        autoplay="false"
+        list-max-height="340px"
+      ></meting-js>
+    </div>
+  </div>
 </template>
-
 <style scoped>
-header {
-  line-height: 1.5;
+.img_bk {
+  width: 100%;
+  height: 100%;
+  z-index: -200;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.appFaBody {
+  width: 99vw;
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.playerBody {
+  width: 100%;
 }
 </style>
